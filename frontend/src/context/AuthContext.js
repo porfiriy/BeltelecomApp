@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import axios from '../api/axios';
+import api from '../api/axios';
 
 export const AuthContext = createContext();
 
@@ -7,27 +7,41 @@ export const AuthProvider = ({ children }) => {
    const [user, setUser] = useState(null);
 
    const login = async (email, password) => {
-      await axios.get('/sanctum/csrf-cookie');
-      await axios.post('/api/login', { email, password });
-      const res = await axios.get('/api/me');
-      setUser(res.data);
+      try {
+         await api.get('/sanctum/csrf-cookie');
+         await api.post('/api/login', { email, password });
+         const res = await api.get('/api/me');
+         setUser(res.data);
+      } catch (error) {
+         console.error('Ошибка входа:', error.response?.data || error.message);
+         throw error;
+      }
    };
 
    const register = async (data) => {
-      await axios.get('/sanctum/csrf-cookie');
-      await axios.post('/api/register', data);
-      const res = await axios.get('/api/user');
-      setUser(res.data);
+      try {
+         await api.get('/sanctum/csrf-cookie');
+         await api.post('/api/register', data);
+         const res = await api.get('/api/user');
+         setUser(res.data);
+      } catch (error) {
+         console.error('Ошибка регистрации:', error.response?.data || error.message);
+         throw error;
+      }
    };
 
    const logout = async () => {
-      await axios.post('/api/logout');
-      setUser(null);
+      try {
+         await api.post('/api/logout');
+         setUser(null);
+      } catch (error) {
+         console.error('Ошибка выхода:', error.response?.data || error.message);
+      }
    };
 
    const checkAuth = async () => {
       try {
-         const res = await axios.get('/api/user');
+         const res = await api.get('/api/user');
          setUser(res.data);
       } catch {
          setUser(null);
