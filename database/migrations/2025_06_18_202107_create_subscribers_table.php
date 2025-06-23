@@ -15,10 +15,10 @@ return new class extends Migration {
         Schema::create('subscribers', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
-            $table->string('adress');
+            $table->string('address');
             $table->string('phone');
-            $table->string('email');
-            $table->date('registration_date')->nulleble();
+            $table->string('email')->nullable();
+            $table->date('registration_date')->nullable();
             $table->timestamps();
         });
     }

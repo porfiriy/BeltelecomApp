@@ -1,13 +1,107 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+}
+html,body {
+  height: 100%;
+  font-size: 16px;
+}
+input {
+  background-color: #232323;
+  border: 1px solid #353535;
+  border-radius: 5px;
+  padding: 10px 20px;
+  color: #fff;
+}
+button {
+  background-color: #353535;
+  border-radius: 5px;
+  padding: 10px 20px;
+  color: #fff;
+}
+body {
+  background-color: #232323;
+  margin: 40px 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  color: #fff;
+}
+.greeting-text {
+  color: #a7a7a7;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.home-wrapper .title {
+  margin: 20px 0;
+  text-align: center;
+}
+.logout-btn {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  color: red;
+  font-weight: 600;
+  background-color: #353535;
+  border-radius: 10px;
+  padding: 10px 20px;
+}
+.form-container {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 30%;
+}
+.login-wrapper .title {
+  margin: 20px 0;
+  text-align: center;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.gray-background {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: #9b9b9b5c;
+  width: 100%;
+  height: 100vh;
+}
+.modal-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #323232;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.modal-container .title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0 0 10px 0;
+}
+form .form-group-btns {
+    display: flex;
+    justify-content: space-between;
 }

@@ -10,7 +10,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
    const xsrfToken = Cookies.get('XSRF-TOKEN');
    if (xsrfToken) {
-      config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken); // Декодируем токен
+      config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
    }
    return config;
 });

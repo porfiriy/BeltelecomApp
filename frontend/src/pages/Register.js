@@ -18,13 +18,15 @@ export default function Register() {
    };
 
    return (
-      <form onSubmit={handleSubmit}>
-         <h2>Регистрация</h2>
-         <input placeholder="Имя" onChange={e => setForm({ ...form, name: e.target.value })} />
-         <input placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} />
-         <input type="password" placeholder="Пароль" onChange={e => setForm({ ...form, password: e.target.value })} />
-         <input type="password" placeholder="Подтвердите пароль" onChange={e => setForm({ ...form, password_confirmation: e.target.value })} />
-         <button type="submit">Зарегистрироваться</button>
-      </form>
+      <div className='login-wrapper'>
+         <form className='form-container' onSubmit={handleSubmit}>
+            <h2 className='title'>Регистрация</h2>
+            <input placeholder="Имя" onChange={e => setForm({ ...form, name: e.target.value })} />
+            <input placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} />
+            <input type="password" placeholder="Пароль" onChange={e => setForm({ ...form, password: e.target.value })} />
+            <input type="password" placeholder="Подтвердите пароль" onChange={e => setForm({ ...form, password_confirmation: e.target.value })} />
+            <button type="submit">Зарегистрироваться</button>
+         </form>
+      </div>
    );
 }
