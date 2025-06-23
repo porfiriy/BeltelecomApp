@@ -24,9 +24,9 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        Auth::login($user);
+        Auth::login($user, true); // Включаем "Запомнить меня"
 
-        return response()->json(['message' => 'Пользователь зарегистрирован'], 201);
+        return response()->json(['message' => 'Пользователь зарегистрирован', 'user' => $user], 201);
     }
 
     public function login(Request $request)
@@ -44,14 +44,17 @@ class AuthController extends Controller
             ]);
         }
 
-        return response()->json([
-            'token' => $user->createToken('auth_token')->plainTextToken,
-        ]);
+        Auth::login($user, true); // Включаем "Запомнить меня"
+
+        return response()->json(['message' => 'Вход выполнен', 'user' => $user]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::logout(); // Завершаем сессию
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return response()->json(['message' => 'Выход выполнен']);
     }
 

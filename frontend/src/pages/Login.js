@@ -11,7 +11,7 @@ export default function Login() {
       e.preventDefault();
       try {
          await login(form.email, form.password);
-         navigate('/dashboard');
+         navigate('/home');
       } catch (err) {
          alert('Ошибка входа');
       }
