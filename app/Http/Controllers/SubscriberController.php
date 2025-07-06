@@ -52,4 +52,17 @@ class SubscriberController extends Controller
             'subscriber' => $subscriber,
         ], 201);
     }
+
+    public function index()
+    {
+        return response()->json(Subscriber::all());
+    }
+
+    public function destroy($id)
+    {
+        $subscriber = Subscriber::findOrFail($id);
+        $subscriber->delete();
+
+        return response()->json(['message' => 'Абонент удалён']);
+    }
 }

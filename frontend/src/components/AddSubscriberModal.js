@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import axios from '../api/axios'; // если используешь настроенный axios
+import axios from '../api/axios';
 
-export default function AddSubscriberModal() {
+export default function AddSubscriberModal({ onClose }) {
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [formData, setFormData] = useState({
       full_name: '',
@@ -33,15 +33,14 @@ export default function AddSubscriberModal() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-         const response = await axios.post('/api/subscribers', formData);
+         await axios.post('/api/subscribers', formData);
          setSuccess('Абонент добавлен!');
-         setErrors({});
-         setTimeout(() => resetForm(), 1500);
-      } catch (error) {
-         if (error.response?.data?.errors) {
-            setErrors(error.response.data.errors);
+         setTimeout(() => onClose(), 1000);
+      } catch (err) {
+         if (err.response?.data?.errors) {
+            setErrors(err.response.data.errors);
          } else {
-            setErrors({ general: 'Ошибка при добавлении абонента' });
+            setErrors({ general: 'Ошибка при добавлении' });
          }
       }
    };
@@ -55,7 +54,7 @@ export default function AddSubscriberModal() {
                <div className="modal-container">
                   <div>
                      <h2 className="title">Добавить нового абонента</h2>
-                     <button className="close-btn" onClick={resetForm}>✕</button>
+                     <button className="close-btn" onClick={onClose}>✕</button>
                   </div>
 
                   {success && <div>{success}</div>}

@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
-import AddSubscriberModal from '../components/AddSubscriberModal';
+import SubscribersPanel from '../components/SubscribersPanel';
 
 export default function Home() {
 
@@ -66,7 +66,7 @@ export default function Home() {
             <button className="logout-btn" onClick={logout}>
                Выйти из аккаунта
             </button>
-            <AddSubscriberModal />
+            <SubscribersPanel />
          </div>
       </div>
    );

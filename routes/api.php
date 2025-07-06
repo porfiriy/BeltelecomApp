@@ -17,6 +17,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/subscribers', [SubscriberController::class, 'index']);
     Route::post('/subscribers', [SubscriberController::class, 'store']);
+    Route::delete('/subscribers/{id}', [SubscriberController::class, 'destroy']);
 });
 
