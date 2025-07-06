@@ -105,3 +105,7 @@ form .form-group-btns {
     display: flex;
     justify-content: space-between;
 }
+
+.user-name-text {
+  color: rgb(115, 0, 172);
+}

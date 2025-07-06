@@ -60,7 +60,7 @@ export default function Home() {
    return (
       <div className="container">
          <div className="home-wrapper">
-            <p className="greeting-text">Добро пожаловать, {user?.name}</p>
+            <p className="greeting-text">Добро пожаловать, <span className='user-name-text'>{user?.name}</span></p>
             <h2 className="title">Панель управления Белтелеком</h2>
             <button className="logout-btn" onClick={logout}>
                Выйти из аккаунта
