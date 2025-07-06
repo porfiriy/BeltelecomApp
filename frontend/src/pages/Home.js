@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
+import AddSubscriberModal from '../components/AddSubscriberModal';
 
 export default function Home() {
 
@@ -65,115 +66,8 @@ export default function Home() {
             <button className="logout-btn" onClick={logout}>
                Выйти из аккаунта
             </button>
-            <button
-               onClick={() => setIsModalOpen(true)}
-            >
-               Добавить абонента
-            </button>
+            <AddSubscriberModal />
          </div>
-
-         {/* Модальное окно */}
-         {isModalOpen && (
-            <div className="gray-background">
-               <div className="modal-container">
-                  <div>
-                     <h2 className='title'>Добавить нового абонента</h2>
-                     <button
-                        className="close-btn"
-                        onClick={() => {
-                           setIsModalOpen(false);
-                           setErrors({});
-                           setSuccess('');
-                           setFormData({
-                              full_name: '',
-                              address: '',
-                              phone: '',
-                              email: '',
-                              registration_date: '',
-                           });
-                        }}
-                     >
-                        ✕
-                     </button>
-                  </div>
-                  {success && <div>{success}</div>}
-                  {errors.general && <div>{errors.general}</div>}
-                  <form onSubmit={handleSubmit}>
-                     <div className="form-group">
-                        <label>ФИО</label>
-                        <input
-                           type="text"
-                           name="full_name"
-                           value={formData.full_name}
-                           onChange={handleChange}
-                           placeholder="Иванов Иван Иванович"
-                        />
-                        {errors.full_name && <p>{errors.full_name[0]}</p>}
-                     </div>
-                     <div className="form-group">
-                        <label>Адрес</label>
-                        <input
-                           type="text"
-                           name="address"
-                           value={formData.address}
-                           onChange={handleChange}
-                           placeholder="г. Минск, ул. Ленина, д. 10"
-                        />
-                        {errors.address && <p>{errors.address[0]}</p>}
-                     </div>
-                     <div className="form-group">
-                        <label>Телефон</label>
-                        <input
-                           type="text"
-                           name="phone"
-                           value={formData.phone}
-                           onChange={handleChange}
-                           placeholder="+375291234567"
-                        />
-                        {errors.phone && <p>{errors.phone[0]}</p>}
-                     </div>
-                     <div className="form-group">
-                        <label>Email (необязательно)</label>
-                        <input
-                           type="email"
-                           name="email"
-                           value={formData.email}
-                           onChange={handleChange}
-                           placeholder="example@domain.com"
-                        />
-                        {errors.email && <p>{errors.email[0]}</p>}
-                     </div>
-                     <div className="form-group">
-                        <label>Дата регистрации (необязательно)</label>
-                        <input
-                           type="date"
-                           name="registration_date"
-                           value={formData.registration_date}
-                           onChange={handleChange}
-                        />
-                        {errors.registration_date && <p>{errors.registration_date[0]}</p>}
-                     </div>
-                     <div className="form-group-btns">
-                        <button
-                           type="button"
-                           onClick={() => {
-                              setIsModalOpen(false);
-                              setErrors({});
-                              setSuccess('');
-                              setFormData({
-                                 full_name: '',
-                                 address: '',
-                                 phone: '',
-                                 email: '',
-                                 registration_date: '',
-                              });
-                           }}>Отмена</button>
-                        <button type="submit">Добавить</button>
-                     </div>
-                  </form>
-               </div>
-            </div>
-         )}
       </div>
    );
 }
