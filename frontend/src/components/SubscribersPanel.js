@@ -41,9 +41,9 @@ export default function SubscribersPanel() {
 
          {showPanel && (
             <div className="subscribers-wrapper">
-               <h2>Список абонентов</h2>
+               <h2 className='panel-title'>Список абонентов</h2>
 
-               <button onClick={() => setIsModalOpen(true)}>
+               <button className='add-subscriber-btn' onClick={() => setIsModalOpen(true)}>
                   Добавить абонента
                </button>
 
