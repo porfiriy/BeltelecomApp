@@ -99,8 +99,8 @@ export default function AddSubscriberModal({ onClose }) {
                </div>
 
                <div className="form-group-btns">
-                  <button type="button" onClick={onClose}>Отмена</button>
-                  <button type="submit">Добавить</button>
+                  <button className='cancel-btn' type="button" onClick={onClose}>Отмена</button>
+                  <button className='submit-btn' type="submit">Добавить</button>
                </div>
             </form>
          </div>

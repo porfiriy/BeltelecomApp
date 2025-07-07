@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Trash2 } from 'lucide-react';
 import axios from '../api/axios';
 import AddSubscriberModal from './AddSubscriberModal';
 
@@ -56,7 +57,7 @@ export default function SubscribersPanel() {
                      {subscribers.map(sub => (
                         <li key={sub.id}>
                            <span>{sub.full_name}</span>
-                           <button onClick={() => handleDelete(sub.id)}>Удалить</button>
+                           <button onClick={() => handleDelete(sub.id)}><Trash2 size={20} color="red" /></button>
                         </li>
                      ))}
                   </ul>
