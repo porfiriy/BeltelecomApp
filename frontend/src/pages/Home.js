@@ -15,9 +15,6 @@ export default function Home() {
          <div className="home-wrapper">
             <p className="greeting-text">Добро пожаловать, <span className='user-name-text'>{user?.name}</span></p>
             <h2 className="title">Панель управления Белтелеком</h2>
-            <button className="logout-btn" onClick={logout}>
-               Выйти из аккаунта
-            </button>
             <SubscribersPanel />
          </div>
       </div>
