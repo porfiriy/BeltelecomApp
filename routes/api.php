@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Маршруты для услуг
     Route::get('/services', [ServiceController::class, 'index']);
-    Route::get('/subscribers/{id}/services', [ServiceController::class, 'getSubscriberServices']); // Услуги абонента
-    Route::post('/subscriber_service', [ServiceController::class, 'assignService']); // Назначение услуги
-    Route::delete('/subscriber_service/{id}', [ServiceController::class, 'removeService']); // Удаление услуги
+    Route::get('/subscribers/{id}/services', [ServiceController::class, 'getSubscriberServices']);
+    Route::post('/subscriber_service', [ServiceController::class, 'assignService']);
+    Route::delete('/subscriber_service/{id}', [ServiceController::class, 'removeService']);
 });

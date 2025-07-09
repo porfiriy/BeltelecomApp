@@ -13,6 +13,6 @@ class Subscriber extends Model
 
     public function services()
     {
-        return $this->belongsToMany(Service::class)->withTimestamps();
+        return $this->belongsToMany(Service::class, 'subscriber_service', 'subscriber_id', 'service_id')->withTimestamps();
     }
 }
