@@ -21,6 +21,47 @@ class ServiceController extends Controller
         }
     }
 
+    public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'type' => 'required|in:internet,tv,phone,extra',
+            ]);
+
+            $service = Service::create([
+                'name' => $request->name,
+                'type' => $request->type,
+            ]);
+
+            return response()->json($service, 201);
+        } catch (\Exception $e) {
+            Log::error('Ошибка в store (ServiceController): ' . $e->getMessage());
+            return response()->json(['error' => 'Ошибка при добавлении услуги', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $service = Service::findOrFail($id);
+
+            // Проверяем, не привязана ли услуга к абонентам
+            $hasSubscribers = DB::table('subscriber_service')
+                ->where('service_id', $id)
+                ->exists();
+            if ($hasSubscribers) {
+                return response()->json(['error' => 'Нельзя удалить услугу, которая назначена абонентам'], 400);
+            }
+
+            $service->delete();
+            return response()->json(['message' => 'Услуга успешно удалена']);
+        } catch (\Exception $e) {
+            Log::error('Ошибка в destroy (ServiceController): ' . $e->getMessage());
+            return response()->json(['error' => 'Ошибка при удалении услуги', 'details' => $e->getMessage()], 500);
+        }
+    }
+
     public function getSubscriberServices($id)
     {
         try {

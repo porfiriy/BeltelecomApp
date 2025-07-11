@@ -3,6 +3,7 @@ import { Trash2 } from 'lucide-react';
 import axios from '../api/axios';
 import AddSubscriberModal from './AddSubscriberModal';
 import AssignServicesModal from './AssignServicesModal';
+import ManageServicesButton from './ManageServicesButton';
 
 export default function SubscribersPanel() {
    const [showPanel, setShowPanel] = useState(false);
@@ -74,7 +75,7 @@ export default function SubscribersPanel() {
 
    return (
       <div>
-         <button onClick={() => setShowPanel(!showPanel)}>
+         <button className='subscribers-btn' onClick={() => setShowPanel(!showPanel)}>
             {showPanel ? 'Скрыть абонентов' : 'Абоненты'}
          </button>
 
@@ -82,9 +83,15 @@ export default function SubscribersPanel() {
             <div className="subscribers-wrapper">
                <h2 className="panel-title">Список абонентов</h2>
 
-               <button className="add-subscriber-btn" onClick={() => setIsModalOpen(true)}>
-                  Добавить абонента
-               </button>
+               <div className="button-group">
+                  <button className="add-subscriber-btn" onClick={() => setIsModalOpen(true)}>
+                     Добавить абонента
+                  </button>
+                  <ManageServicesButton onUpdate={fetchSubscribers} />
+                  <button className="load-subscribers-btn" onClick={fetchSubscribers}>
+                     Загрузить абонентов
+                  </button>
+               </div>
 
                {loading ? (
                   <p>Загрузка...</p>
@@ -101,7 +108,7 @@ export default function SubscribersPanel() {
                            >
                               Назначить услуги
                            </button>
-                           <button onClick={() => handleDelete(sub.id)}>
+                           <button title='удалить абонента' onClick={() => handleDelete(sub.id)}>
                               <Trash2 size={20} color="red" />
                            </button>
                            {subscriberServices[sub.id]?.length > 0 ? (
@@ -112,6 +119,7 @@ export default function SubscribersPanel() {
                                        <button
                                           onClick={() => handleDeleteService(sub.id, service.id)}
                                           className="delete-service-btn"
+                                          title='удалить услугу'
                                        >
                                           <Trash2 size={16} color="red" />
                                        </button>
