@@ -75,23 +75,22 @@ export default function SubscribersPanel() {
 
    return (
       <div>
-         <button className='subscribers-btn' onClick={() => setShowPanel(!showPanel)}>
-            {showPanel ? 'Скрыть абонентов' : 'Абоненты'}
-         </button>
+         <div className="button-group">
+            <button className='subscribers-btn' onClick={() => setShowPanel(!showPanel)}>
+               {showPanel ? 'Скрыть абонентов' : 'Абоненты'}
+            </button>
+            <ManageServicesButton onUpdate={fetchSubscribers} />
+         </div>
 
          {showPanel && (
             <div className="subscribers-wrapper">
                <h2 className="panel-title">Список абонентов</h2>
 
-               <div className="button-group">
-                  <button className="add-subscriber-btn" onClick={() => setIsModalOpen(true)}>
-                     Добавить абонента
-                  </button>
-                  <ManageServicesButton onUpdate={fetchSubscribers} />
-                  <button className="load-subscribers-btn" onClick={fetchSubscribers}>
-                     Загрузить абонентов
-                  </button>
-               </div>
+
+               <button className="add-subscriber-btn" onClick={() => setIsModalOpen(true)}>
+                  Добавить абонента
+               </button>
+
 
                {loading ? (
                   <p>Загрузка...</p>

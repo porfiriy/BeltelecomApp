@@ -14,8 +14,20 @@ class Equipment extends Model
         return $this->belongsTo(EquipmentType::class, 'equipment_type_id');
     }
 
+    protected $fillable = ['model', 'equipment_type_id', 'subscriber_id', 'status'];
+
+    public function equipmentType()
+    {
+        return $this->belongsTo(EquipmentType::class, 'equipment_type_id');
+    }
+
     public function subscriber()
     {
-        return $this->belongsTo(Subscriber::class);
+        return $this->belongsTo(Subscriber::class, 'subscriber_id');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(EquipmentLog::class, 'equipment_id');
     }
 }

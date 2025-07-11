@@ -15,4 +15,9 @@ class Subscriber extends Model
     {
         return $this->belongsToMany(Service::class, 'subscriber_service', 'subscriber_id', 'service_id')->withTimestamps();
     }
+
+    public function equipment()
+    {
+        return $this->hasMany(Equipment::class, 'subscriber_id');
+    }
 }

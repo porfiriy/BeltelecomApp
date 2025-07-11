@@ -10,8 +10,10 @@ class EquipmentType extends Model
 {
     use HasFactory;
 
-    public function equipments()
+    protected $fillable = ['name'];
+
+    public function equipment()
     {
-        return $this->hasMany(Equipment::class);
+        return $this->hasMany(Equipment::class, 'equipment_type_id');
     }
 }
