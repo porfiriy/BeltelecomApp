@@ -77,17 +77,38 @@ class ServiceController extends Controller
         }
     }
 
+    public function getSubscriberEquipment($id)
+    {
+        try {
+            $equipment = Equipment::with(['equipmentType'])
+                ->where('subscriber_id', $id)
+                ->select('id', 'model', 'equipment_type_id', 'status')
+                ->get();
+            return response()->json($equipment);
+        } catch (\Exception $e) {
+            Log::error('Ошибка в getSubscriberEquipment (ServiceController): ' . $e->getMessage());
+            return response()->json([]);
+        }
+    }
+
     public function assignService(Request $request)
     {
         try {
             $request->validate([
                 'subscriber_id' => 'required|exists:subscribers,id',
                 'service_id' => 'required|exists:services,id',
+                'equipment_ids' => 'sometimes|array',
+                'equipment_ids.*' => 'exists:equipment,id',
+                'issue_date' => 'sometimes|date',
             ]);
 
-            Log::info('Получены данные: ', ['subscriber_id' => $request->subscriber_id, 'service_id' => $request->service_id]);
+            Log::info('Получены данные: ', [
+                'subscriber_id' => $request->subscriber_id,
+                'service_id' => $request->service_id,
+                'equipment_ids' => $request->equipment_ids,
+                'issue_date' => $request->issue_date,
+            ]);
 
-            // Проверяем, не назначена ли услуга уже
             $exists = DB::table('subscriber_service')
                 ->where('subscriber_id', $request->subscriber_id)
                 ->where('service_id', $request->service_id)
@@ -96,7 +117,6 @@ class ServiceController extends Controller
                 return response()->json(['error' => 'Эта услуга уже назначена абоненту'], 400);
             }
 
-            // Проверяем ограничения: не более одного тарифа интернета и ТВ
             $service = Service::findOrFail($request->service_id);
             if (in_array($service->type, ['internet', 'tv'])) {
                 $existingService = DB::table('subscriber_service')
@@ -109,7 +129,6 @@ class ServiceController extends Controller
                 }
             }
 
-            // Проверяем обязательность телефонии
             if ($service->type !== 'phone') {
                 $hasTelephony = DB::table('subscriber_service')
                     ->join('services', 'services.id', '=', 'subscriber_service.service_id')
@@ -121,11 +140,30 @@ class ServiceController extends Controller
                 }
             }
 
-            // Назначаем услугу через отношение belongsToMany
             $subscriber = Subscriber::findOrFail($request->subscriber_id);
             $subscriber->services()->attach($request->service_id);
 
-            return response()->json(['message' => 'Услуга успешно назначена'], 201);
+            if ($request->has('equipment_ids') && $request->has('issue_date')) {
+                foreach ($request->equipment_ids as $equipment_id) {
+                    $equipment = Equipment::findOrFail($equipment_id);
+                    if ($equipment->status !== 'free') {
+                        return response()->json(['error' => "Оборудование {$equipment->model} не доступно"], 400);
+                    }
+                    $equipment->update([
+                        'subscriber_id' => $request->subscriber_id,
+                        'status' => 'issued',
+                    ]);
+                    EquipmentLog::create([
+                        'equipment_id' => $equipment->id,
+                        'subscriber_id' => $request->subscriber_id,
+                        'user_id' => Auth::id(),
+                        'action' => 'issued',
+                        'logged_at' => $request->issue_date,
+                    ]);
+                }
+            }
+
+            return response()->json(['message' => 'Услуга и оборудование успешно назначены'], 201);
         } catch (\Exception $e) {
             Log::error('Ошибка в assignService (ServiceController): ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return response()->json(['error' => 'Ошибка при назначении услуги', 'details' => $e->getMessage()], 500);

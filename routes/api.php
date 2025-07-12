@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\EquipmentTypeController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -27,4 +29,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/subscriber_service/{id}', [ServiceController::class, 'removeService']);
     Route::post('/services', [ServiceController::class, 'store']);
     Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
+
+    // Маршруты для оборудования
+    Route::get('/equipment', [EquipmentController::class, 'index']);
+    Route::post('/equipment', [EquipmentController::class, 'store']);
+    Route::post('/subscriber_equipment', [EquipmentController::class, 'issue']);
+    Route::post('/replace_equipment', [EquipmentController::class, 'replace']);
+
+    // Маршруты для типов оборудования
+    Route::get('/equipment_types', [EquipmentTypeController::class, 'index']);
 });
