@@ -3,210 +3,182 @@ import axios from '../api/axios';
 
 const AssignServicesModal = ({ subscriberId, onClose }) => {
    const [services, setServices] = useState([]);
-   const [selectedServices, setSelectedServices] = useState({
-      phone: null,
-      internet: null,
-      tv: null,
-      extra: [],
-   });
+   const [equipment, setEquipment] = useState([]);
+   const [equipmentTypes, setEquipmentTypes] = useState([]);
+   const [selectedServiceId, setSelectedServiceId] = useState('');
+   const [selectedEquipmentIds, setSelectedEquipmentIds] = useState([]);
+   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState('');
    const [success, setSuccess] = useState('');
 
    useEffect(() => {
-      const fetchServices = async () => {
+      const fetchData = async () => {
          try {
-            const [servicesRes, subscriberServicesRes] = await Promise.all([
+            const [servicesRes, equipmentRes, typesRes] = await Promise.all([
                axios.get('/api/services'),
-               axios.get(`/api/subscribers/${subscriberId}/services`).catch(err => ({
-                  data: [], // Возвращаем пустой массив при ошибке
-               })),
+               axios.get('/api/equipment'),
+               axios.get('/api/equipment_types'),
             ]);
-            console.log('Услуги:', servicesRes.data); // Отладка
-            console.log('Услуги абонента:', subscriberServicesRes.data); // Отладка
             setServices(servicesRes.data);
-
-            const subscriberServices = subscriberServicesRes.data;
-            const phoneService = servicesRes.data.find(s => s.type === 'phone');
-            const internetService = subscriberServices.find(s => s.type === 'internet')?.id;
-            const tvService = subscriberServices.find(s => s.type === 'tv')?.id;
-            const extraServices = subscriberServices
-               .filter(s => s.type === 'extra')
-               .map(s => s.id);
-
-            setSelectedServices({
-               phone: phoneService?.id || null,
-               internet: internetService || null,
-               tv: tvService || null,
-               extra: extraServices,
-            });
+            setEquipment(equipmentRes.data.filter(eq => eq.status === 'available'));
+            setEquipmentTypes(typesRes.data);
+            setLoading(false);
          } catch (err) {
             console.error('Ошибка загрузки данных:', err);
-            setError('Ошибка загрузки услуг');
-         } finally {
+            setError('Ошибка загрузки данных: ' + (err.response?.data?.message || err.message));
             setLoading(false);
          }
       };
-      fetchServices();
-   }, [subscriberId]);
+      fetchData();
+   }, []);
 
-   const handleServiceChange = (type, serviceId) => {
-      if (type === 'internet' || type === 'tv') {
-         setSelectedServices(prev => ({ ...prev, [type]: serviceId }));
-      } else if (type === 'extra') {
-         setSelectedServices(prev => ({
-            ...prev,
-            extra: prev.extra.includes(serviceId)
-               ? prev.extra.filter(id => id !== serviceId)
-               : [...prev.extra, serviceId],
-         }));
-      } else if (type === 'phone') {
-         setSelectedServices(prev => ({ ...prev, phone: serviceId }));
-      }
-   };
-
-   const handleSubmit = async (e) => {
+   const handleAssignService = async (e) => {
       e.preventDefault();
       setError('');
       setSuccess('');
-
-      if (!selectedServices.phone) {
-         setError('Услуга телефонии обязательна');
-         return;
-      }
-
       try {
-         const servicesToAssign = [
-            selectedServices.phone,
-            selectedServices.internet,
-            selectedServices.tv,
-            ...selectedServices.extra,
-         ].filter(id => id !== null);
-
-         await Promise.all(
-            servicesToAssign.map(serviceId =>
-               axios.post('/api/subscriber_service', {
-                  subscriber_id: subscriberId,
-                  service_id: serviceId,
-               })
-            )
-         );
-         setSuccess('Услуги успешно назначены');
-         setTimeout(() => {
-            onClose();
-         }, 1000);
+         await axios.post('/api/subscriber_service', {
+            subscriber_id: subscriberId,
+            service_id: selectedServiceId,
+            equipment_ids: selectedEquipmentIds,
+            issue_date: issueDate,
+         });
+         setSuccess('Услуга и оборудование успешно назначены');
+         setSelectedServiceId('');
+         setSelectedEquipmentIds([]);
+         setTimeout(() => setSuccess(''), 2000);
       } catch (err) {
-         console.error('Ошибка при назначении услуг:', err);
-         setError('Ошибка при назначении услуг');
+         console.error('Ошибка при назначении услуги:', err);
+         setError('Ошибка при назначении услуги: ' + (err.response?.data?.message || err.message));
       }
    };
 
-   const groupedServices = services.reduce((acc, service) => {
-      acc[service.type] = acc[service.type] || [];
-      acc[service.type].push(service);
-      return acc;
-   }, {});
+   const handleEquipmentChange = (e) => {
+      const options = e.target.options;
+      const selected = [];
+      for (let i = 0; i < options.length; i++) {
+         if (options[i].selected) {
+            selected.push(options[i].value);
+         }
+      }
+      setSelectedEquipmentIds(selected);
+   };
 
-   console.log('Группированные услуги:', groupedServices); // Отладка
-
-   if (loading) {
-      return <div className="modal-loading">Загрузка...</div>;
-   }
-
-   if (error) {
-      return <div className="modal-error">{error}</div>;
-   }
+   const getEquipmentTypeName = (typeId) => {
+      const type = equipmentTypes.find(t => t.id === parseInt(typeId));
+      return type ? type.name : 'Неизвестный тип';
+   };
 
    return (
       <div className="gray-background">
          <div className="modal-container">
             <div>
-               <h2 className="title">Назначить услуги</h2>
+               <h2 className="title">Назначить услуги для абонента {subscriberId}</h2>
                <button className="close-btn" onClick={onClose}>✕</button>
             </div>
-            {success && <div className="success">{success}</div>}
-            {error && <div className="error">{error}</div>}
-            <form onSubmit={handleSubmit}>
-               <div className="form-group">
-                  <h3>Телефония (обязательно)</h3>
-                  {groupedServices.phone?.length > 0 ? (
-                     groupedServices.phone.map(service => (
-                        <div key={service.id}>
+            {loading ? (
+               <div className="modal-loading">Загрузка...</div>
+            ) : error ? (
+               <div className="modal-error">{error}</div>
+            ) : (
+               <>
+                  {success && <div className="success">{success}</div>}
+                  <form onSubmit={handleAssignService}>
+                     <div className="form-group">
+                        <label>
+                           Услуга:
+                           <select
+                              value={selectedServiceId}
+                              onChange={e => setSelectedServiceId(e.target.value)}
+                              required
+                           >
+                              <option value="">Выберите услугу</option>
+                              {services.map(service => (
+                                 <option key={service.id} value={service.id}>
+                                    {service.name} ({service.type})
+                                 </option>
+                              ))}
+                           </select>
+                        </label>
+                        {selectedServiceId && services.find(s => s.id === parseInt(selectedServiceId))?.type === 'internet' && (
+                           <label>
+                              Роутер/Модем:
+                              <select
+                                 multiple
+                                 value={selectedEquipmentIds}
+                                 onChange={handleEquipmentChange}
+                              >
+                                 {equipment
+                                    .filter(eq => [1, 2].includes(eq.equipment_type_id)) // Роутер или Модем
+                                    .map(eq => (
+                                       <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
+                                    ))}
+                              </select>
+                           </label>
+                        )}
+                        {selectedServiceId && services.find(s => s.id === parseInt(selectedServiceId))?.type === 'tv' && (
+                           <>
+                              <label>
+                                 Роутер/Модем:
+                                 <select
+                                    multiple
+                                    value={selectedEquipmentIds}
+                                    onChange={handleEquipmentChange}
+                                 >
+                                    {equipment
+                                       .filter(eq => [1, 2].includes(eq.equipment_type_id)) // Роутер или Модем
+                                       .map(eq => (
+                                          <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
+                                       ))}
+                                 </select>
+                              </label>
+                              <label>
+                                 ТВ-приставка:
+                                 <select
+                                    multiple
+                                    value={selectedEquipmentIds}
+                                    onChange={handleEquipmentChange}
+                                 >
+                                    {equipment
+                                       .filter(eq => eq.equipment_type_id === 3) // ТВ-приставка
+                                       .map(eq => (
+                                          <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
+                                       ))}
+                                 </select>
+                              </label>
+                           </>
+                        )}
+                        {selectedServiceId && services.find(s => s.id === parseInt(selectedServiceId))?.name.includes('Видеоконтроль') && (
+                           <label>
+                              Камера:
+                              <select
+                                 multiple
+                                 value={selectedEquipmentIds}
+                                 onChange={handleEquipmentChange}
+                              >
+                                 {equipment
+                                    .filter(eq => eq.equipment_type_id === 4) // Камера
+                                    .map(eq => (
+                                       <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
+                                    ))}
+                              </select>
+                           </label>
+                        )}
+                        <label>
+                           Дата выдачи:
                            <input
-                              type="radio"
-                              name="phone"
-                              value={service.id}
-                              checked={selectedServices.phone === service.id}
-                              onChange={() => handleServiceChange('phone', service.id)}
+                              type="date"
+                              value={issueDate}
+                              onChange={e => setIssueDate(e.target.value)}
+                              required
                            />
-                           <label>{service.name}</label>
-                        </div>
-                     ))
-                  ) : (
-                     <p>Услуги телефонии не найдены</p>
-                  )}
-               </div>
-               <div className="form-group">
-                  <h3>Интернет (выберите один тариф)</h3>
-                  {groupedServices.internet?.length > 0 ? (
-                     groupedServices.internet.map(service => (
-                        <div key={service.id}>
-                           <input
-                              type="radio"
-                              name="internet"
-                              value={service.id}
-                              checked={selectedServices.internet === service.id}
-                              onChange={() => handleServiceChange('internet', service.id)}
-                           />
-                           <label>{service.name}</label>
-                        </div>
-                     ))
-                  ) : (
-                     <p>Услуги интернета не найдены</p>
-                  )}
-               </div>
-               <div className="form-group">
-                  <h3>ТВ (выберите один тариф)</h3>
-                  {groupedServices.tv?.length > 0 ? (
-                     groupedServices.tv.map(service => (
-                        <div key={service.id}>
-                           <input
-                              type="radio"
-                              name="tv"
-                              value={service.id}
-                              checked={selectedServices.tv === service.id}
-                              onChange={() => handleServiceChange('tv', service.id)}
-                           />
-                           <label>{service.name}</label>
-                        </div>
-                     ))
-                  ) : (
-                     <p>Услуги ТВ не найдены</p>
-                  )}
-               </div>
-               <div className="form-group">
-                  <h3>Дополнительные услуги</h3>
-                  {groupedServices.extra?.length > 0 ? (
-                     groupedServices.extra.map(service => (
-                        <div key={service.id}>
-                           <input
-                              type="checkbox"
-                              value={service.id}
-                              checked={selectedServices.extra.includes(service.id)}
-                              onChange={() => handleServiceChange('extra', service.id)}
-                           />
-                           <label>{service.name}</label>
-                        </div>
-                     ))
-                  ) : (
-                     <p>Дополнительные услуги не найдены</p>
-                  )}
-               </div>
-               <div className="form-group-btns">
-                  <button type="button" onClick={onClose}>Отмена</button>
-                  <button type="submit">Назначить</button>
-               </div>
-            </form>
+                        </label>
+                        <button type="submit">Назначить</button>
+                     </div>
+                  </form>
+               </>
+            )}
          </div>
       </div>
    );
