@@ -21,7 +21,7 @@ const AssignServicesModal = ({ subscriberId, onClose }) => {
                axios.get('/api/equipment_types'),
             ]);
             setServices(servicesRes.data);
-            setEquipment(equipmentRes.data.filter(eq => eq.status === 'available'));
+            setEquipment(equipmentRes.data.filter(eq => eq.status === 'free'));
             setEquipmentTypes(typesRes.data);
             setLoading(false);
          } catch (err) {

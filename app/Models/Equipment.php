@@ -9,13 +9,14 @@ class Equipment extends Model
 {
     use HasFactory;
 
+
+
+    protected $fillable = ['model', 'equipment_type_id', 'subscriber_id', 'status'];
+
     public function type()
     {
         return $this->belongsTo(EquipmentType::class, 'equipment_type_id');
     }
-
-    protected $fillable = ['model', 'equipment_type_id', 'subscriber_id', 'status'];
-
     public function equipmentType()
     {
         return $this->belongsTo(EquipmentType::class, 'equipment_type_id');

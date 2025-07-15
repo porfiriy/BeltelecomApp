@@ -178,7 +178,7 @@ const ManageEquipmentModal = ({ onClose }) => {
                               required
                            >
                               <option value="">Выберите оборудование</option>
-                              {equipment.filter(eq => eq.status === 'available').map(eq => (
+                              {equipment.filter(eq => eq.status === 'free').map(eq => (
                                  <option key={eq.id} value={eq.id}>
                                     {eq.model} ({eq.equipment_type ? eq.equipment_type.name : 'Неизвестный тип'})
                                  </option>
@@ -240,7 +240,7 @@ const ManageEquipmentModal = ({ onClose }) => {
                               required
                            >
                               <option value="">Выберите оборудование</option>
-                              {equipment.filter(eq => eq.status === 'available' && (
+                              {equipment.filter(eq => eq.status === 'free' && (
                                  replaceData.old_equipment_id ? eq.equipment_type_id === equipment.find(e => e.id == replaceData.old_equipment_id)?.equipment_type_id : true
                               )).map(eq => (
                                  <option key={eq.id} value={eq.id}>
