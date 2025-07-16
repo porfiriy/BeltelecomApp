@@ -7,6 +7,8 @@ use App\Models\Service;
 use App\Models\Subscriber;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Equipment;
+use App\Models\EquipmentLog;
 
 class ServiceController extends Controller
 {

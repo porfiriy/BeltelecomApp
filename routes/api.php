@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/subscriber_service/{id}', [ServiceController::class, 'removeService']);
     Route::post('/services', [ServiceController::class, 'store']);
     Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
+    Route::get('/subscribers/{id}/equipment', [ServiceController::class, 'getSubscriberEquipment']);
 
     // Маршруты для оборудования
     Route::get('/equipment', [EquipmentController::class, 'index']);

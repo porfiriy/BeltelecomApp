@@ -26,7 +26,7 @@ const AssignServicesModal = ({ subscriberId, onClose }) => {
             setLoading(false);
          } catch (err) {
             console.error('Ошибка загрузки данных:', err);
-            setError('Ошибка загрузки данных: ' + (err.response?.data?.message || err.message));
+            setError('Ошибка загрузки данных: ' + (err.response?.data?.error || err.message));
             setLoading(false);
          }
       };
@@ -50,7 +50,7 @@ const AssignServicesModal = ({ subscriberId, onClose }) => {
          setTimeout(() => setSuccess(''), 2000);
       } catch (err) {
          console.error('Ошибка при назначении услуги:', err);
-         setError('Ошибка при назначении услуги: ' + (err.response?.data?.message || err.message));
+         setError(err.response?.data?.error || 'Ошибка при назначении услуги');
       }
    };
 
