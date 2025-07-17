@@ -121,31 +121,39 @@ const AssignServicesModal = ({ subscriberId, onClose }) => {
                            <>
                               <label>
                                  Роутер/Модем:
-                                 <select
-                                    multiple
-                                    value={selectedEquipmentIds}
-                                    onChange={handleEquipmentChange}
-                                 >
-                                    {equipment
-                                       .filter(eq => [1, 2].includes(eq.equipment_type_id)) // Роутер или Модем
-                                       .map(eq => (
-                                          <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
-                                       ))}
-                                 </select>
+                                 {equipment.filter(eq => [1, 2].includes(eq.equipment_type_id) && eq.status === 'free').length > 0 ? (
+                                    <select
+                                       multiple
+                                       value={selectedEquipmentIds}
+                                       onChange={handleEquipmentChange}
+                                    >
+                                       {equipment
+                                          .filter(eq => [1, 2].includes(eq.equipment_type_id) && eq.status === 'free')
+                                          .map(eq => (
+                                             <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
+                                          ))}
+                                    </select>
+                                 ) : (
+                                    <p>Нет доступных роутеров/модемов</p>
+                                 )}
                               </label>
                               <label>
                                  ТВ-приставка:
-                                 <select
-                                    multiple
-                                    value={selectedEquipmentIds}
-                                    onChange={handleEquipmentChange}
-                                 >
-                                    {equipment
-                                       .filter(eq => eq.equipment_type_id === 3) // ТВ-приставка
-                                       .map(eq => (
-                                          <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
-                                       ))}
-                                 </select>
+                                 {equipment.filter(eq => eq.equipment_type_id === 3 && eq.status === 'free').length > 0 ? (
+                                    <select
+                                       multiple
+                                       value={selectedEquipmentIds}
+                                       onChange={handleEquipmentChange}
+                                    >
+                                       {equipment
+                                          .filter(eq => eq.equipment_type_id === 3 && eq.status === 'free')
+                                          .map(eq => (
+                                             <option key={eq.id} value={eq.id}>{eq.model} ({getEquipmentTypeName(eq.equipment_type_id)})</option>
+                                          ))}
+                                    </select>
+                                 ) : (
+                                    <p>Нет доступных ТВ-приставок</p>
+                                 )}
                               </label>
                            </>
                         )}

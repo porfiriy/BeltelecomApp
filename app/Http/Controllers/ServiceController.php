@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Service;
 use App\Models\Subscriber;
 use Illuminate\Support\Facades\DB;
