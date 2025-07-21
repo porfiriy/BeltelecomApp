@@ -88,16 +88,18 @@ body {
   height: 100vh;
 }
 .modal-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #323232;
-  border-radius: 8px;
-  padding: 20px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #323232;
+    border-radius: 8px;
+    padding: 30px;
+    width: 90%;
+    height: 50%;
+    overflow: auto;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 .modal-container .title {
   text-align: center;
@@ -160,7 +162,6 @@ form .form-group-btns {
     list-style: none;
     overflow: auto;
     width: 100%;
-    max-height: 400px;
     margin: 40px 0 0 0;
 }
 .subscribers-wrapper .subscribers-list .services-list  {
@@ -204,3 +205,9 @@ form .form-group-btns {
     border-radius: 20px;
 }
 
+.subscribers-wrapper .button-group button {
+    height: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+}

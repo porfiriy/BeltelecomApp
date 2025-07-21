@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import axios from '../api/axios';
 import AddSubscriberModal from './AddSubscriberModal';
 import AssignServicesModal from './AssignServicesModal';
+import ActivityLogModal from './ActivityLogModal';
 import ManageServicesButton from './ManageServicesButton';
 import ManageEquipmentButton from './ManageEquipmentButton';
+
+const formatDate = (dateString) => {
+   if (!dateString) return 'Дата не указана';
+   const date = new Date(dateString);
+   return date instanceof Date && !isNaN(date) ? date.toLocaleDateString() : 'Дата не указана';
+};
 
 
 export default function SubscribersPanel() {
@@ -15,6 +22,11 @@ export default function SubscribersPanel() {
    const [error, setError] = useState('');
    const [subscriberServices, setSubscriberServices] = useState({});
    const [subscriberEquipment, setSubscriberEquipment] = useState({});
+   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+
+   useEffect(() => {
+      fetchSubscribers();
+   }, []);
 
    const fetchSubscribers = async () => {
       try {
@@ -112,10 +124,10 @@ export default function SubscribersPanel() {
       }
    };
 
+
    return (
       <div>
          <div className="subscribers-wrapper">
-            <h2 className="panel-title">Список абонентов</h2>
 
             <div className="button-group">
                <button className="add-subscriber-btn" onClick={() => setIsModalOpen(true)}>
@@ -123,10 +135,15 @@ export default function SubscribersPanel() {
                </button>
                <ManageServicesButton onUpdate={fetchSubscribers} />
                <ManageEquipmentButton onUpdate={fetchSubscribers} />
-               <button className="load-subscribers-btn" onClick={fetchSubscribers}>
-                  Загрузить абонентов
+               <button
+                  className="submit-btn"
+                  onClick={() => setIsLogModalOpen(true)}
+               >
+                  Показать логи активности
                </button>
             </div>
+
+            <h2 className="panel-title">Список абонентов</h2>
 
             {loading ? (
                <p>Загрузка...</p>
@@ -136,7 +153,7 @@ export default function SubscribersPanel() {
                <ul className="subscribers-list">
                   {subscribers.map(sub => (
                      <li key={sub.id}>
-                        <span>{sub.full_name}</span>
+                        <span className='username-title'>{sub.full_name}</span>
                         <button
                            className="assign-services-btn"
                            onClick={() => setSelectedSubscriberId(sub.id)}
@@ -168,7 +185,7 @@ export default function SubscribersPanel() {
                            <ul className="equipment-list">
                               {subscriberEquipment[sub.id].map(eq => (
                                  <li key={eq.id}>
-                                    {eq.model} ({eq.equipment_type ? eq.equipment_type.name : 'Неизвестный тип'}) - {eq.status === 'issued' ? `Выдано ${new Date(eq.created_at).toLocaleDateString()}` : eq.status}
+                                    {eq.model} ({eq.equipment_type ? eq.equipment_type.name : 'Неизвестный тип'}) - {eq.status === 'issued' ? `Выдано ${formatDate(eq.created_at)}` : eq.status}
                                  </li>
                               ))}
                            </ul>
@@ -189,6 +206,9 @@ export default function SubscribersPanel() {
                      fetchSubscribers();
                   }}
                />
+            )}
+            {isLogModalOpen && (
+               <ActivityLogModal onClose={() => setIsLogModalOpen(false)} />
             )}
             {selectedSubscriberId && (
                <AssignServicesModal
