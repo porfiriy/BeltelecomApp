@@ -176,7 +176,7 @@ class ServiceController extends Controller
     public function removeService($id)
     {
         try {
-            $pivot = DB::table('subscriber_service')->where('id', $id)->first();
+            $pivot = DB::table('subscriber_service')->where('service_id', $id)->first();
             if (!$pivot) {
                 return response()->json(['error' => 'Запись не найдена'], 404);
             }
